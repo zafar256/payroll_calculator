@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Payroll Calculator</title>
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="container payroll">
+        <div class="logo"><i class="fa-solid fa-bag-shopping"></i>Payroll</div>
+        <hr>
+        <h2>NET PAY CALCULATOR</h2>
+        <p>Enter the basic salary abd benefits to calculate your net pay.</p>
+
+        <div class="calculator-box">
+            <div class="inputs">
+                <label for="basic">Basic Salary:</label>
+                <span>KES</span><input type="number" id="basic" step="0.01">
+                <label for="benefits">Benefits:</label>
+                <span>KES</span><input type="number" id="benefits" step="0.01">
+                <button onclick="calculate()">CALCULATE</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th style="text-align: right;">Result (KES)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Gross Salary</td>
+                        <td id="gross">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>NSSF</td>
+                        <td id="nssf">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Payee</td>
+                        <td id="paye">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>NHIF</td>
+                        <td id="nhif">0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Net Pay</strong></td>
+                        <td id="net" style="font-weight:bold;">0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+    <script>
+
+        function getNSSF(gross) {
+            return gross <= 18000 ? 360 : 720;
+        }
+
+        function getNHIF(gross) {
+            const nhifRates = [
+                [5999, 150], [7999, 300], [11999, 400], [14999, 500], [19999, 600],
+                [24999, 750], [29999, 850], [34999, 900], [39999, 950], [44999, 1000],
+                [49999, 1100], [59999, 1200], [69999, 1300], [79999, 1400],
+                [89999, 1500], [99999, 1600], [Infinity, 1700]
+            ];
+            for (let [max, amount] of nhifRates) {
+                if (gross <= max) return amount;
+            }
+        }
+
+        function calculatePAYE(taxable) {
+            let paye = 0;
+            if (taxable <= 24000) {
+                paye = taxable * 0.10;
+            } else if (taxable <= 32333) {
+                paye = (24000 * 0.10) + ((taxable - 24000) * 0.25);
+            } else {
+                paye = (24000 * 0.10) + (8333 * 0.25) + ((taxable - 32333) * 0.30);
+            }
+            return paye;
+        }
+
+        function format(num) {
+            return Number(num).toLocaleString("en-KE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function calculate() {
+            const basic = parseFloat(document.getElementById("basic").value) || 0;
+            const benefits = parseFloat(document.getElementById("benefits").value) || 0;
+            const gross = basic + benefits;
+            const nssf = getNSSF(gross);
+            const taxable = gross - nssf;
+            const paye = calculatePAYE(taxable);
+            const nhif = getNHIF(gross);
+            const net = gross - nssf - paye - nhif;
+
+            // Update DOM
+            document.getElementById("gross").textContent = format(gross);
+            document.getElementById("nssf").textContent = format(nssf);
+            document.getElementById("paye").textContent = format(paye);
+            document.getElementById("nhif").textContent = format(nhif);
+            document.getElementById("net").textContent = format(net);
+        }
+    </script>
+
+</body>
+
+</html>
