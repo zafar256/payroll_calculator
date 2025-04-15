@@ -45,12 +45,17 @@
 }
 
 .payroll button {
-    background-color: orange;
+    background-color: orangered;
     color: white;
-    border: none;
+    border-radius: 10px;
+    border-color: transparent;
     padding: 10px 20px;
     font-weight: bold;
     cursor: pointer;
+}
+
+.payroll button:hover{
+    background-color: #2f2f2f;
 }
 
 .payroll table {
