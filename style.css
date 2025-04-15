@@ -1,28 +1,23 @@
-.container {
-    font-family: "Segoe UI", sans-serif;
-    background-color: #f5f5f5;
-}
-
-.logo {
+.payroll .logo {
     font-size: 32px;
     font-weight: bold;
     color: #0077cc;
 }
 
-.logo i {
+.payroll .logo i {
     color: orange;
 }
 
-h2 {
+.payroll h2 {
     margin: 10px 0;
 }
 
-p {
+.payroll p {
     margin-bottom: 20px;
     color: #666;
 }
 
-.calculator-box {
+.payroll .calculator-box {
     background-color: #fff;
     display: inline-block;
     padding: 30px;
@@ -31,7 +26,7 @@ p {
     text-align: left;
 }
 
-.inputs {
+.payroll .inputs {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
@@ -39,17 +34,17 @@ p {
     flex-wrap: wrap;
 }
 
-label {
+.payroll label {
     font-weight: bold;
 }
 
-input[type="number"] {
+.payroll input[type="number"] {
     width: 150px;
     padding: 8px;
     text-align: right;
 }
 
-button {
+.payroll button {
     background-color: orange;
     color: white;
     border: none;
@@ -58,33 +53,33 @@ button {
     cursor: pointer;
 }
 
-table {
+.payroll table {
     width: 100%;
     margin-top: 20px;
     border-collapse: collapse;
 }
 
-th,
+.payroll th,
 td {
     padding: 12px;
     border-bottom: 1px solid #ddd;
 }
 
-th {
+.payroll th {
     text-align: left;
 }
 
-td:last-child, th:last-child {
+.payroll td:last-child,
+th:last-child {
     text-align: right;
-  }
+}
 
-strong {
+.payroll strong {
     font-weight: bold;
 }
 
-.payroll{
-    position: absolute;
-    top: 35%;
-    left: 30%;
-    transform: translate(-30%, -30%);
+.payroll {
+    text-align: center;
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f5f5f5;
 }
