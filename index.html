@@ -14,11 +14,12 @@
 <body>
     <div class="container">
         <div class="payroll">
-            <div class="logo"><i class="fa-solid fa-bag-shopping"></i>Payroll</div>
-            <hr>
+            <!-- <h3 style="color: #0077cc; font-weight: bold; font-size: 32px;"><i class="fa-solid fa-bag-shopping"
+                    style="color: orange;"></i>Payroll</h3>
+            <hr> -->
             <h2>NET PAY CALCULATOR</h2>
             <p>Enter the basic salary and benefits to calculate your net pay.</p>
-
+    
             <div class="calculator-box">
                 <div class="inputs">
                     <label for="basic">Basic Salary:</label>
@@ -27,7 +28,7 @@
                     <span>KES</span><input type="number" id="benefits" step="0.01">
                     <button onclick="calculate()">CALCULATE</button>
                 </div>
-
+    
                 <table>
                     <thead>
                         <tr>
@@ -61,14 +62,14 @@
             </div>
         </div>
     </div>
-
-
+    
+    
     <script>
-
+    
         function getNSSF(gross) {
             return gross <= 18000 ? 360 : 720;
         }
-
+    
         function getNHIF(gross) {
             const nhifRates = [
                 [5999, 150], [7999, 300], [11999, 400], [14999, 500], [19999, 600],
@@ -80,7 +81,7 @@
                 if (gross <= max) return amount;
             }
         }
-
+    
         function calculatePAYE(taxable) {
             let paye = 0;
             if (taxable <= 24000) {
@@ -92,14 +93,14 @@
             }
             return paye;
         }
-
+    
         function format(num) {
             return Number(num).toLocaleString("en-KE", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
         }
-
+    
         function calculate() {
             const basic = parseFloat(document.getElementById("basic").value) || 0;
             const benefits = parseFloat(document.getElementById("benefits").value) || 0;
@@ -109,7 +110,7 @@
             const paye = calculatePAYE(taxable);
             const nhif = getNHIF(gross);
             const net = gross - nssf - paye - nhif;
-
+    
             // Update DOM
             document.getElementById("gross").textContent = format(gross);
             document.getElementById("nssf").textContent = format(nssf);
