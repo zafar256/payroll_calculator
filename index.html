@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <title>Payroll Calculator</title>
     <link rel="stylesheet" href="style.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -14,7 +13,7 @@
 <body>
     <div class="container">
         <div class="payroll">
-            <div class="logo"><i class="fa-solid fa-bag-shopping"></i>Payroll</div>
+            <div class="logo"><i class="fa-solid fa-bag-shopping"></i>eZafar</div>
             <hr>
             <h2>NET PAY CALCULATOR</h2>
             <p>Enter the basic salary and benefits to calculate your net pay.</p>
@@ -25,7 +24,7 @@
                     <span>KES</span><input type="number" id="basic" step="0.01">
                     <label for="benefits">Benefits:</label>
                     <span>KES</span><input type="number" id="benefits" step="0.01">
-                    <button onclick="calculate()">CALCULATE</button>
+                    <button onclick="calculateNetPay()">CALCULATE</button>
                 </div>
 
                 <table>
@@ -41,82 +40,134 @@
                             <td id="gross">0.00</td>
                         </tr>
                         <tr>
-                            <td>NSSF</td>
-                            <td id="nssf">0.00</td>
+                            <td>NSSF Tier 1</td>
+                            <td id="nssf_tier1">0.00</td>
                         </tr>
                         <tr>
-                            <td>Payee</td>
+                            <td>NSSF Tier 2</td>
+                            <td id="nssf_tier2">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Housing Levy (1.5%)</td>
+                            <td id="housing">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>SHIF (2.75%)</td>
+                            <td id="shif">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Personal Relief (KES 2,400)</td>
+                            <td id="relief">2,400.00</td>
+                        </tr>
+                        <tr>
+                            <td>PAYE (After Relief)</td>
                             <td id="paye">0.00</td>
                         </tr>
                         <tr>
-                            <td>NHIF</td>
-                            <td id="nhif">0.00</td>
+                            <td>Total Deductions</td>
+                            <td id="total_deductions">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Taxable Income</td>
+                            <td id="taxable_income">0.00</td>
                         </tr>
                         <tr>
                             <td><strong>Net Pay</strong></td>
                             <td id="net" style="font-weight:bold;">0.00</td>
                         </tr>
+
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-
     <script>
+        var basic = document.getElementById("basic");
+        var benefits = document.getElementById("benefits");
+        var gross = document.getElementById("gross");
+        var nssf_tier1 = document.getElementById("nssf_tier1");
+        var nssf_tier2 = document.getElementById("nssf_tier2");
+        var housing = document.getElementById("housing");
+        var shif = document.getElementById("shif");
+        var relief = document.getElementById("relief");
+        var paye = document.getElementById("paye");
+        var net = document.getElementById("net");
+        var total_deductions = document.getElementById("total_deductions");
+        var taxable_income = document.getElementById("taxable_income");
 
-        function getNSSF(gross) {
-            return gross <= 18000 ? 360 : 720;
-        }
+        function calculateNetPay() {
+            var basicSalary = parseFloat(basic.value) || 0;
+            var benefitsAmount = parseFloat(benefits.value) || 0;
+            var grossSalary = basicSalary + benefitsAmount;
 
-        function getNHIF(gross) {
-            const nhifRates = [
-                [5999, 150], [7999, 300], [11999, 400], [14999, 500], [19999, 600],
-                [24999, 750], [29999, 850], [34999, 900], [39999, 950], [44999, 1000],
-                [49999, 1100], [59999, 1200], [69999, 1300], [79999, 1400],
-                [89999, 1500], [99999, 1600], [Infinity, 1700]
-            ];
-            for (let [max, amount] of nhifRates) {
-                if (gross <= max) return amount;
+            var nssfTier1Value = 480;
+            var nssfTier2Value = 0;
+            if (grossSalary > 8000) {
+                nssfTier2Value = grossSalary * 0.06;
             }
-        }
+            nssfTier2Value = Math.min(nssfTier2Value, 3840);
 
-        function calculatePAYE(taxable) {
-            let paye = 0;
-            if (taxable <= 24000) {
-                paye = taxable * 0.10;
-            } else if (taxable <= 32333) {
-                paye = (24000 * 0.10) + ((taxable - 24000) * 0.25);
-            } else {
-                paye = (24000 * 0.10) + (8333 * 0.25) + ((taxable - 32333) * 0.30);
+            var housingLevyValue = grossSalary * 0.015;
+            var shifValue = grossSalary * 0.0275;
+            var totalStatutory = nssfTier1Value + nssfTier2Value + housingLevyValue + shifValue;
+            var taxableIncomeValue = grossSalary - totalStatutory;
+
+            var reliefValue = 2400;
+
+            function calculatePaye(taxableIncome) {
+                let payeValue = 0;
+                if (taxableIncome > 24000) {
+                    payeValue += 24000 * 0.10;
+                    taxableIncome -= 24000;
+
+                    if (taxableIncome > 0) {
+                        let band = Math.min(taxableIncome, 8333);
+                        payeValue += band * 0.25;
+                        taxableIncome -= band;
+                    }
+
+                    if (taxableIncome > 0) {
+                        let band = Math.min(taxableIncome, 467667);
+                        payeValue += band * 0.30;
+                        taxableIncome -= band;
+                    }
+
+                    if (taxableIncome > 0) {
+                        let band = Math.min(taxableIncome, 300000);
+                        payeValue += band * 0.325;
+                        taxableIncome -= band;
+                    }
+
+                    if (taxableIncome > 0) {
+                        payeValue += taxableIncome * 0.35;
+                    }
+                }
+
+                return payeValue;
             }
-            return paye;
+
+            var payeValue = calculatePaye(taxableIncomeValue);
+            var finalPayeValue = Math.max(payeValue - reliefValue, 0);
+
+            var totalDeductions = totalStatutory + finalPayeValue;
+            var netPayValue = grossSalary - totalDeductions;
+
+            // Update values in the DOM with comma formatting
+            gross.innerHTML = grossSalary.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            nssf_tier1.innerHTML = nssfTier1Value.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            nssf_tier2.innerHTML = nssfTier2Value.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            housing.innerHTML = housingLevyValue.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            shif.innerHTML = shifValue.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            paye.innerHTML = finalPayeValue.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            relief.innerHTML = reliefValue.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            net.innerHTML = netPayValue.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            total_deductions.innerHTML = totalDeductions.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            taxable_income.innerHTML = taxableIncomeValue.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
         }
 
-        function format(num) {
-            return Number(num).toLocaleString("en-KE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
-
-        function calculate() {
-            const basic = parseFloat(document.getElementById("basic").value) || 0;
-            const benefits = parseFloat(document.getElementById("benefits").value) || 0;
-            const gross = basic + benefits;
-            const nssf = getNSSF(gross);
-            const taxable = gross - nssf;
-            const paye = calculatePAYE(taxable);
-            const nhif = getNHIF(gross);
-            const net = gross - nssf - paye - nhif;
-
-            // Update DOM
-            document.getElementById("gross").textContent = format(gross);
-            document.getElementById("nssf").textContent = format(nssf);
-            document.getElementById("paye").textContent = format(paye);
-            document.getElementById("nhif").textContent = format(nhif);
-            document.getElementById("net").textContent = format(net);
-        }
+        document.querySelector("button").addEventListener("click", calculateNetPay);
     </script>
 
 </body>
