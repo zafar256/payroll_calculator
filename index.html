@@ -13,11 +13,11 @@
 <body>
     <div class="container">
         <div class="payroll">
-            <div class="logo"><i class="fa-solid fa-bag-shopping"></i>eZafar</div>
+            <h1 class="logo"><i class="fa-solid fa-bag-shopping" style="color: orangered;"></i>eZafar</h1>
             <hr>
             <h2>NET PAY CALCULATOR</h2>
             <p>Enter the basic salary and benefits to calculate your net pay.</p>
-
+    
             <div class="calculator-box">
                 <div class="inputs">
                     <label for="basic">Basic Salary:</label>
@@ -26,8 +26,8 @@
                     <span>KES</span><input type="number" id="benefits" step="0.01">
                     <button onclick="calculateNetPay()">CALCULATE</button>
                 </div>
-
-                <table>
+    
+                <table border="2">
                     <thead>
                         <tr>
                             <th>Description</th>
@@ -57,7 +57,11 @@
                         </tr>
                         <tr>
                             <td>Personal Relief (KES 2,400)</td>
-                            <td id="relief">2,400.00</td>
+                            <td id="relief">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Taxable Income</td>
+                            <td id="taxable_income">0.00</td>
                         </tr>
                         <tr>
                             <td>PAYE (After Relief)</td>
@@ -68,20 +72,16 @@
                             <td id="total_deductions">0.00</td>
                         </tr>
                         <tr>
-                            <td>Taxable Income</td>
-                            <td id="taxable_income">0.00</td>
-                        </tr>
-                        <tr>
                             <td><strong>Net Pay</strong></td>
                             <td id="net" style="font-weight:bold;">0.00</td>
                         </tr>
-
+    
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
+    
     <script>
         var basic = document.getElementById("basic");
         var benefits = document.getElementById("benefits");
@@ -95,64 +95,64 @@
         var net = document.getElementById("net");
         var total_deductions = document.getElementById("total_deductions");
         var taxable_income = document.getElementById("taxable_income");
-
+    
         function calculateNetPay() {
             var basicSalary = parseFloat(basic.value) || 0;
             var benefitsAmount = parseFloat(benefits.value) || 0;
             var grossSalary = basicSalary + benefitsAmount;
-
+    
             var nssfTier1Value = 480;
             var nssfTier2Value = 0;
             if (grossSalary > 8000) {
                 nssfTier2Value = grossSalary * 0.06;
             }
             nssfTier2Value = Math.min(nssfTier2Value, 3840);
-
+    
             var housingLevyValue = grossSalary * 0.015;
             var shifValue = grossSalary * 0.0275;
             var totalStatutory = nssfTier1Value + nssfTier2Value + housingLevyValue + shifValue;
             var taxableIncomeValue = grossSalary - totalStatutory;
-
+    
             var reliefValue = 2400;
-
+    
             function calculatePaye(taxableIncome) {
                 let payeValue = 0;
                 if (taxableIncome > 24000) {
                     payeValue += 24000 * 0.10;
                     taxableIncome -= 24000;
-
+    
                     if (taxableIncome > 0) {
                         let band = Math.min(taxableIncome, 8333);
                         payeValue += band * 0.25;
                         taxableIncome -= band;
                     }
-
+    
                     if (taxableIncome > 0) {
                         let band = Math.min(taxableIncome, 467667);
                         payeValue += band * 0.30;
                         taxableIncome -= band;
                     }
-
+    
                     if (taxableIncome > 0) {
                         let band = Math.min(taxableIncome, 300000);
                         payeValue += band * 0.325;
                         taxableIncome -= band;
                     }
-
+    
                     if (taxableIncome > 0) {
                         payeValue += taxableIncome * 0.35;
                     }
                 }
-
+    
                 return payeValue;
             }
-
+    
             var payeValue = calculatePaye(taxableIncomeValue);
             var finalPayeValue = Math.max(payeValue - reliefValue, 0);
-
+    
             var totalDeductions = totalStatutory + finalPayeValue;
             var netPayValue = grossSalary - totalDeductions;
-
+    
             // Update values in the DOM with comma formatting
             gross.innerHTML = grossSalary.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             nssf_tier1.innerHTML = nssfTier1Value.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -164,11 +164,12 @@
             net.innerHTML = netPayValue.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             total_deductions.innerHTML = totalDeductions.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             taxable_income.innerHTML = taxableIncomeValue.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
+    
         }
-
+    
         document.querySelector("button").addEventListener("click", calculateNetPay);
     </script>
+    
 
 </body>
 
